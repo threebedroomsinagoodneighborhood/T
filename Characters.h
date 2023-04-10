@@ -5,103 +5,58 @@
 
 class Character {
 
-    std::string name;
-    Point2D location;
-    bool npc;
+    std::string name;   // имя персонажа
+
+    Point2D location;   // текущее положение персонажа
+
+    bool npc;           // признак NPC
 
 public:
 
-    Character(const std::string& name, const Point2D& location, bool npcFlag = 0);
+    Character(const std::string& name, const Point2D& location, bool npcFlag = 0); // конструктор
 
-    void moveTo(Point2D point);
+    void moveTo(Point2D point);             // изменить положение на указанную координату
 
     //0 - вверх 1 - вправо 2 - вниз 3 - влево 4 - вверх-влево 
     //5 - вверх-вправо 6 - вниз-вправо 7 - вниз-влево
-    void moveTo(int direction, int steps);
+    void moveTo(int direction, int steps);  // изменить положение по направлению и количеству шагов 
 
-    Point2D getLocation();
+    Point2D getLocation();                  // узнать положение
 
-    bool isNPC();
+    bool isNPC();                           // флаг NPC
 
-    virtual void autoMove() = 0;
+    virtual void autoMove() = 0;            // движение NPC
 
-    std::string getName() { return name; }
+    std::string getName() { return name; }  // узнать имя
+
 };
 
 class Prey : public Character {
 
-private:
-
-    const int maxRange = 1;
+    const int maxRange = 1;     // максимальный шаг
 
 public:
 
-    Prey(const std::string& name, const Point2D& location, bool npcFlag = 0);
+    Prey(const std::string& name, const Point2D& location, bool npcFlag = 0); // конструктор
 
-    int askDirection();
+    int askDirection();         // узнать направление
 
-    void autoMove() override;
-
-
+    void autoMove() override;   // движение NPC
 
 };
 
 class Predator : public Character{
-private:
 
-    const int maxRange = 5;
+    const int maxRange = 5;     // максимальный шаг
  
 public:
-    Predator(const std::string& name, const Point2D& location, bool npcFlag = 0) 
-        : Character(name, location, npcFlag) {   }
 
-    int askRange() {
+    Predator(const std::string & name,const Point2D & location,bool npcFlag = 0); // конструктор
 
-        do {
-            int range;
-            std::cout << "На сколько? (1-5) \n";
-            std::cin >> range;
+    int askRange();             // узнать шаг
 
-            if (range >= 1 && range <= maxRange) {
-                return range;     
-            }
-            else std::cout << "Некорректный ввод, попробуй ещё раз \n";
+    int askDirection();         // узнать направление
 
-        } while (true);
-    }
-
-    int askDirection() {
-        do {
-
-            int direction(0);
-            std::cout << "Куда идти?\n";
-            std::cout << "0 - вверх, 1 - вправо, 2 - вниз, 3 - влево,\n";
-            std::cin >> direction;
-
-            if (direction <= 3 && direction >= 0) {
-                return direction;
-            }
-            else std::cout << "Некорректный ввод, попробуй ещё раз \n";
-
-        } while (true);       
-
-    }
-
-    void autoMove() override {
-
-        int direction = 0;
-        int range = 0;
-
-        if (isNPC()) {
-            direction = rand() % 4;
-            range = rand() % 5 + 1;
-        }
-        else {
-            direction = askDirection();
-            range = askRange();
-        }
-
-        moveTo(direction, range);
-    }
+    void autoMove() override;   // движение NPC
 
 };

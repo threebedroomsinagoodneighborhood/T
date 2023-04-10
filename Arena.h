@@ -6,41 +6,33 @@
 
 class Arena {
     
-    int length, width;
-    Prey* prey;
-    Predator* predator;
+    int length, width;              // размер поля
 
-    int view_length, view_width;   
-    char** field;
+    Prey* prey;                     // игрок-жертва
+
+    Predator* predator;             // игрок-хищник
+
+    int view_length, view_width;    // отображение
+
+    char** field;                   // поле
 
 public:
 
     Arena(int l, int w, Prey* prey, Predator* predator);
 
     void clearStep();
+
     bool checkOverRun();
     
     ~Arena();
 
     friend std::ostream& operator<<(std::ostream&, const Arena&);
 
+    friend bool gameover(const Prey & prey,const Predator & predator);
+
+    friend bool inView(const Prey & prey,const Predator & predator);
+
 };
 
 
 
-//bool check(const Prey& prey, const Predator& predator) {
-//
-//    if (prey.location.x == predator.location.x && abs(prey.location.y - predator.location.y) <= 5) {
-//        return 1;
-//    }
-//    else if (prey.location.y == predator.location.y && abs(prey.location.x - predator.location.x) <= 5) {
-//        return 1;
-//    }
-//    else return 0;
-//}
-//
-//
-//bool check1(const Prey& prey, const Predator& predator) {
-//    if ((prey.location.x == predator.location.x) && (prey.location.y == predator.location.y)) return 1;
-//    else return 0;
-//}

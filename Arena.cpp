@@ -1,17 +1,20 @@
 #include "Arena.h"
 
-Arena::Arena(int l, int w, Prey* prey, Predator* predator) : prey(prey), predator(predator) {
+Arena::Arena(int l,int w,Prey * prey,Predator * predator): prey(prey),predator(predator) {
+    //TODO: Проверка диапазона l w от (1 до 99)       
     length = l;
     width = w;
 
+    // увеличение размера поля для постоянных символов (границы, координаты)
     int shift_l = 3;
     int shift_w = 4;
-    int stretch_w = 2;
+    int stretch_w = 2;  // удвоим ширину поля (для симметрии клеток при отображении)
 
     view_length = length + shift_l;
     view_width = width * stretch_w + shift_w;
 
-    field = new char* [view_length]();
+    // Выделение памяти под массив field размером view_length x view_width
+    field = new char * [view_length]();
 
     for (int i = 0; i < view_length; i++) {
 
@@ -23,10 +26,14 @@ Arena::Arena(int l, int w, Prey* prey, Predator* predator) : prey(prey), predato
         }
     }
 
+    // Заполнение массива декоративными символами //
+
+    // Верхняя и нижняя грань поля
     for (int j = 2; j < view_width; j++) {
         field[0][j] = '~';
         field[view_length - 2][j] = '~';
 
+        // Нумерация снизу
         int cell_num = (j / 2);
 
         if (j >= view_width - 2) continue;
@@ -47,11 +54,13 @@ Arena::Arena(int l, int w, Prey* prey, Predator* predator) : prey(prey), predato
         }
     }
 
+    // Левая и правая грань поля
     for (int i = 1; i < view_length - 2; i++) {
 
         field[i][2] = '|';
         field[i][view_width - 1] = '|';
-        
+
+        // Нумерации слева            
         int y_coords = view_length - shift_l + 1;
 
         if (y_coords - i > 9) {
@@ -64,12 +73,14 @@ Arena::Arena(int l, int w, Prey* prey, Predator* predator) : prey(prey), predato
 }
 
 void Arena::clearStep() {
+    // Удаление жертвы
     int preyX = (prey->getLocation().getX() * 2) + 2;
     int preyY = prey->getLocation().getY() + 2;
 
     field[view_length - preyY][preyX] = ' ';
     field[view_length - preyY][preyX - 1] = ' ';
 
+    // Удаление хищника
     int predX = (predator->getLocation().getX() * 2) + 2;
     int predY = predator->getLocation().getY() + 2;
 
@@ -93,6 +104,7 @@ bool Arena::checkOverRun() {
 
 Arena::~Arena() {
 
+    //TODO: Проверить правильность освобождения памяти
     for (int i = 0; i < length; i++) {
 
         delete[] field[i];
@@ -101,14 +113,16 @@ Arena::~Arena() {
     delete[] field;
 }
 
-std::ostream& operator<<(std::ostream& out, const Arena& a) {
+std::ostream & operator<<(std::ostream & out,const Arena & a) {
 
+    // Размещение жертвы
     int preyX = (a.prey->getLocation().getX() * 2) + 2;
     int preyY = a.prey->getLocation().getY() + 2;
 
     a.field[a.view_length - preyY][preyX] = ')';
     a.field[a.view_length - preyY][preyX - 1] = '(';
 
+    // Размещение хищника
     int predX = (a.predator->getLocation().getX() * 2) + 2;
     int predY = a.predator->getLocation().getY() + 2;
 
@@ -123,4 +137,25 @@ std::ostream& operator<<(std::ostream& out, const Arena& a) {
         std::cout << "\n";
     }
     return out;
+}
+
+bool Arena::gameover (const Arena & a) { // условие окончания игры
+
+    if ((a.prey->getLocation() == a.predator->getLocation())) return 1;
+
+    return 0;
+
+}
+
+bool Arena::inView(const Arena & a) { // жертва в поле зрения хищника-NPC
+
+    if (a.prey->getLocation().getX() == a.predator->getLocation().getX() && abs(a.prey->getLocation().getY() - a.predator->getLocation().getY()) <= 5)
+        return 1;
+
+    else if (a.prey->getLocation().getY() == a.predator->getLocation().getY() && abs(a.prey->getLocation().getX() - a.predator->getLocation().getX()) <= 5)
+        return 1;
+
+    else 
+        return 0;
+
 }
