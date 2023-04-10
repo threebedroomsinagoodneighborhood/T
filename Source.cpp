@@ -13,7 +13,7 @@ using namespace std;
 
 int main() {
     system("chcp 65001");
-
+    
     srand(time(NULL));
 
     Prey prey("prey", Point2D(5, 20), true);
