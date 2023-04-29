@@ -5,34 +5,49 @@
 
 
 class Arena {
+
+    Prey * prey;                    // игрок-жертва
+    Predator * predator;            // игрок-хищник
     
     int length, width;              // размер поля
-
-    Prey* prey;                     // игрок-жертва
-
-    Predator* predator;             // игрок-хищник
-
-    int view_length, view_width;    // отображение
+    int view_length,view_width;     // отображение
 
     char** field;                   // поле
 
 public:
 
-    Arena(int l, int w, Prey* prey, Predator* predator);
+    Arena(int, int, Prey *, Predator *);    // конструктор
+    ~Arena();                               //деструктор
 
-    void clearStep();
+    void clearStep();                       // оставление следа для проверки захода на границу поля
+    bool checkOverRun();                    // проверка захода за правую и верхнюю границы поля
 
-    bool checkOverRun();
-    
-    ~Arena();
+    friend std::ostream& operator<<(std::ostream&, const Arena&); // вывод (отрисовка)
 
-    friend std::ostream& operator<<(std::ostream&, const Arena&);
+    bool gameover();   // условие окончания игры
 
-    friend bool gameover(const Prey & prey,const Predator & predator);
+    bool PreyInView(); // жертва в поле зрения хищника-NPC
 
-    friend bool inView(const Prey & prey,const Predator & predator);
+    void PredatorPounce();     // атака при PreyInView
+
+    Point2D PreyLocation() { return prey->getLocation(); }
+    Point2D PredatorLocation() { return predator->getLocation(); }
+
+    void overboard(){
+        int truePreyX=prey->getLocation().getX(),
+            truePreyY=prey->getLocation().getY(),
+            truePredX=predator->getLocation().getX(),
+            truePredY=predator->getLocation().getY();
+        if (truePreyX<0) truePreyX+=length;
+        else if (truePreyX>length) truePreyX-=length;
+        if (truePreyY<0) truePreyX+=width;
+        else if (truePreyY>width) truePreyY-=width;
+        if (truePredX<0) truePreyX+=length;
+        else if (truePredX>length) truePredX-=length;
+        if (truePredY<0) truePreyX+=width;
+        else if (truePredY>width) truePredY-=width;
+
+        prey->moveTo(truePreyX,truePreyY);
+    }
 
 };
-
-
-

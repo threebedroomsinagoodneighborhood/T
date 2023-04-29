@@ -12,38 +12,43 @@ using namespace std;
 
 
 int main() {
-    system("chcp 65001");
-    
-    srand(time(NULL));
+    try{
+        //system("chcp 65001");
 
-    Prey prey("prey", Point2D(5, 20), true);
-    Predator predator("predator", Point2D(3, 10), true);
+        srand(time(NULL));
 
-    Arena arena(30, 30, &prey, &predator);
+        Prey prey("prey",Point2D(1,1),0);//1 = npc, 0 = контроль
+        Predator predator("predator",Point2D(9,9),1);
 
-    cout << arena;
+        Arena arena(10,10,&prey,&predator);
 
-    for (int i = 0; i <= 40; i++) {
-        arena.clearStep();
+        std::cout << arena;
 
-        Point2D prevPreyLocation(prey.getLocation());
-        Point2D prevPredLocation(predator.getLocation());
+        for (int i = 0; i <= 40; i++) {
+            arena.clearStep();
 
-        prey.autoMove();
-        predator.autoMove();
+            Point2D prevPreyLocation(prey.getLocation());
+            Point2D prevPredLocation(predator.getLocation());
 
-        if (arena.checkOverRun())
-        {
-            prey.moveTo(prevPreyLocation);
-            predator.moveTo(prevPredLocation);
+            prey.autoMove();
+            if (arena.PreyInView()) arena.PredatorPounce();
+            else predator.autoMove();
+            //if (arena.checkOverRun()){
+            //    prey.moveTo(prevPreyLocation);
+            //    predator.moveTo(prevPredLocation);
+            //}
+
+            std::cout << arena;
+            if (arena.gameover()) break;
+            std::cout<<arena.PreyLocation()<<", "<<arena.PredatorLocation()<<'\n';
+            system("timeout /t 1");
+            //system("cls");
         }
-
-        
-        cout << arena;
-         
-        system("timeout /t 1");
-        
-        system("cls");
+    }
+    catch (exception * e)
+    {
+        cout<<"An error occurred.";
+        cout<<e<<'\n'<<e->what();
     }
     
     return 0;

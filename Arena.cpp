@@ -100,6 +100,8 @@ bool Arena::checkOverRun() {
     if (predX > width || predX < 1 || predY > length || predY < 1) return true;
 
     return false;
+    //мне кажется прямо здесь можно сделать fixOverrun без цикла
+    //одной попытки хватит тк невозможно за один шаг в два раза превысить предел границ
 }
 
 Arena::~Arena() {
@@ -114,20 +116,25 @@ Arena::~Arena() {
 }
 
 std::ostream & operator<<(std::ostream & out,const Arena & a) {
+    int truePreyX=a.prey->getLocation().getX(),
+        truePreyY=a.prey->getLocation().getY(),
+        truePredX=a.predator->getLocation().getX(),
+        truePredY=a.predator->getLocation().getY();
+
 
     // Размещение жертвы
-    int preyX = (a.prey->getLocation().getX() * 2) + 2;
-    int preyY = a.prey->getLocation().getY() + 2;
+    int preyX = (truePreyX * 2) + 2;
+    int preyY = truePreyY + 2;
 
-    a.field[a.view_length - preyY][preyX] = ')';
-    a.field[a.view_length - preyY][preyX - 1] = '(';
+    a.field[a.view_length - preyY][preyX] = 'Y';
+    a.field[a.view_length - preyY][preyX - 1] = 'E';
 
     // Размещение хищника
-    int predX = (a.predator->getLocation().getX() * 2) + 2;
-    int predY = a.predator->getLocation().getY() + 2;
+    int predX = (truePredX * 2) + 2;
+    int predY = truePredY + 2;
 
-    a.field[a.view_length - predY][predX] = '*';
-    a.field[a.view_length - predY][predX - 1] = '*';
+    a.field[a.view_length - predY][predX] = 'R';
+    a.field[a.view_length - predY][predX - 1] = 'O';
 
 
     for (int i = 0; i < a.view_length; i++) {
@@ -139,23 +146,46 @@ std::ostream & operator<<(std::ostream & out,const Arena & a) {
     return out;
 }
 
-bool Arena::gameover (const Arena & a) { // условие окончания игры
+bool Arena::gameover(){     // условие окончания игры
 
-    if ((a.prey->getLocation() == a.predator->getLocation())) return 1;
-
+    if ((prey->getLocation() == predator->getLocation())) {
+        std::cout<<"\nyou died\n"; return 1;
+    }
+    
     return 0;
 
 }
 
-bool Arena::inView(const Arena & a) { // жертва в поле зрения хищника-NPC
+bool Arena::PreyInView(){   // жертва в поле зрения хищника-NPC
 
-    if (a.prey->getLocation().getX() == a.predator->getLocation().getX() && abs(a.prey->getLocation().getY() - a.predator->getLocation().getY()) <= 5)
+    if (prey->getLocation().getX() == predator->getLocation().getX() && abs(prey->getLocation().getY() - predator->getLocation().getY()) <= 5)
         return 1;
 
-    else if (a.prey->getLocation().getY() == a.predator->getLocation().getY() && abs(a.prey->getLocation().getX() - a.predator->getLocation().getX()) <= 5)
+    else if (prey->getLocation().getY() == predator->getLocation().getY() && abs(prey->getLocation().getX() - predator->getLocation().getX()) <= 5)
         return 1;
 
-    else 
+    else
         return 0;
+
+}
+
+void Arena::PredatorPounce(){       // атака при PreyInView
+
+    int  distance;
+    if (prey->getLocation().getX() - predator->getLocation().getX()!=0){
+        distance = (prey->getLocation().getX() - predator->getLocation().getX());
+        if (abs(distance)<=5) 
+            predator->moveTo(prey->getLocation().getX()+distance,prey->getLocation().getY());
+        else 
+            predator->moveTo(prey->getLocation().getX()+5,prey->getLocation().getY());
+    }
+    else { 
+        distance = (prey->getLocation().getY() - predator->getLocation().getY()); 
+        if (abs(distance)<=5)
+            predator->moveTo(prey->getLocation().getX(),prey->getLocation().getY()+distance);
+        else
+            predator->moveTo(prey->getLocation().getX(),prey->getLocation().getY()+5);
+    }
+
 
 }

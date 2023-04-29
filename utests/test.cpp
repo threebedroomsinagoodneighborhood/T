@@ -2,7 +2,8 @@
 
 #include "test_Point2D.h"
 #include "test_Prey.h"
-
+#include "test_Predator.h"
+#include "test_Arena.h"
 
 
 

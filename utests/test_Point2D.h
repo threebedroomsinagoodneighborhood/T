@@ -60,5 +60,5 @@ TEST(TestPoint2D, TestEQcheck) {
 //
 //	Point2D point(1,1);
 //	std::string out = '(' + itoa(point.getX()) + ',' + itoa(point.getY()) + ')';//ûûûû...
-//	//ASSERT_STREQ("(1,1)",out);
+//	//ASSERT_STREQ("(1,1)",out.c_str());
 //}
